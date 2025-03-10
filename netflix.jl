@@ -5,7 +5,7 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ aeb708e0-fb6e-11ef-3d05-0ba03444f8d7
-using DataFrames
+using DataFrames, LinearAlgebra
 
 # ╔═╡ bc68d865-6a8a-4636-aec4-81e1ea0706fd
 netflix = DataFrame()
@@ -25,12 +25,28 @@ end
 netflix
 
 # ╔═╡ 4f085d8a-a9dc-4e71-8095-7049e5a28213
+A = Matrix(netflix)
 
+# ╔═╡ 0fa21fd1-40be-4595-8423-baf774d2b744
+U,D,V = svd(A)
+
+# ╔═╡ 2d5dadeb-2339-4997-a3e1-9581997c297a
+begin
+	Ur = U[:,4]
+	Vr=V[4,:]
+end
+
+# ╔═╡ 3a6cce9c-0d90-4417-9a0f-0b45b09cb42d
+diagm(D[1:4])
+
+# ╔═╡ 8dab0bb3-b706-43a0-98f4-feeeb72f37b5
+R = Ur*Vr'
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [compat]
 DataFrames = "~1.7.0"
@@ -40,9 +56,9 @@ DataFrames = "~1.7.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.3"
+julia_version = "1.11.1"
 manifest_format = "2.0"
-project_hash = "33f339daacc72a995b00de2c6da03f231a6ceb77"
+project_hash = "feae75f40829413cb4a15a96ac847074ba5252ca"
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -278,5 +294,9 @@ version = "5.11.0+0"
 # ╠═cc3d8c4f-5f7a-4275-a341-7b97f11aae7c
 # ╠═39e49da2-4730-498a-a3bc-f4e32d84d0a5
 # ╠═4f085d8a-a9dc-4e71-8095-7049e5a28213
+# ╠═0fa21fd1-40be-4595-8423-baf774d2b744
+# ╠═2d5dadeb-2339-4997-a3e1-9581997c297a
+# ╠═3a6cce9c-0d90-4417-9a0f-0b45b09cb42d
+# ╠═8dab0bb3-b706-43a0-98f4-feeeb72f37b5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
