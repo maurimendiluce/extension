@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.20.3
+# v0.20.5
 
 using Markdown
 using InteractiveUtils
@@ -7,58 +7,59 @@ using InteractiveUtils
 # ╔═╡ aeb708e0-fb6e-11ef-3d05-0ba03444f8d7
 using DataFrames, LinearAlgebra,Plots
 
+# ╔═╡ 6e5b1efa-58e0-4a01-ae8a-9c5de5650b19
+md"""
+## Matemática para recomendar películas
+
+Resumen: En la actualidad existen muchas plataformas para ver peliculas, series, para escuchar musica, etc. Por ejemplo, cuando buscamos y vemos algunas pelicula en Netflix, la misma plataforma comienza a recomendarme nuevo contenido. Pero no cualquier contenido. Se puede notar que muchas veces la pelicula que me recomienda es "similar" a algo que ya vimos. ¿Cómo es posible que el algoritmo conozca o prediga mis gustos? Acá es donde entra la matemática junto con una herramienta muy poderosa conocida como "Descomposición en valores singulares", la cual puede realizar una predicción con los datos que hay disponibles. En este taller veremos una versión simplificada de como hacen estas plataformas para recomendar contenido y experimentaremos con algunos ejemplos simples usando la pc.
+"""
+
 # ╔═╡ cc3d8c4f-5f7a-4275-a341-7b97f11aae7c
 begin
-	netflix.userID = 1:7
-	netflix.movie_1 = [5,0,3,5,0,0,5]#rand(0:5,10)
-	netflix.movie_2 = [5,0,0,5,2,0,5]#rand(0:5,10)
-	netflix.movie_3 = [4,0,5,0,0,5,0]#rand(0:5,10)
-	netflix.movie_4 = [0,0,5,0,0,5,0]#rand(0:5,10)
-	netflix.movie_5 = [4,5,0,0,5,4,0]
-	netflix.movie_6 = [0,5,0,1,5,0,0]
-	#netflix.movie_5 = rand(0:5,10)
-	#netflix.movie_6 = rand(0:5,10)
+	netflix = DataFrame()
+	netflix.Matrix = [5,0,3,5,0,0,5]
+	netflix.Alien = [5,0,0,5,2,0,5]
+	netflix.Toy_Story = [4,0,5,0,0,5,0]
+	netflix.Monsters_inc = [0,0,5,0,0,5,0]
+	netflix.Titanic = [4,5,0,0,5,4,0]
+	netflix.Amelie = [0,5,0,1,5,0,0]
 end
 
 # ╔═╡ 39e49da2-4730-498a-a3bc-f4e32d84d0a5
 netflix
 
+# ╔═╡ 89559ff4-44b9-4cc4-a060-e4f65456346e
+names(netflix)
+
 # ╔═╡ 4f085d8a-a9dc-4e71-8095-7049e5a28213
-A = Matrix(netflix[:,2:end])
+A = Matrix(netflix)
 
 # ╔═╡ 0fa21fd1-40be-4595-8423-baf774d2b744
 descom = svd(A)
 
 # ╔═╡ c8e878d3-dada-42e1-ad1d-ea8a6b7ca61a
-descom.S
+singluar_values = descom.S
 
 # ╔═╡ 2d5dadeb-2339-4997-a3e1-9581997c297a
 begin
 	k = 3
-	U = descom.U[:,1:k]
-	V = descom.Vt[1:k,:]
-	R = U*V
+	matriz_usuarios = descom.U[:,1:k]
+	matriz_elementos = descom.Vt[1:k,:]
+	prediccion = matriz_usuarios*matriz_elementos
+	prediccion_redondeo = round.(prediccion,digits = 2)
 end
 
-# ╔═╡ 48752a28-a395-4ad2-bb47-48e4b099ac8c
+# ╔═╡ 40c37d71-b482-42ba-806a-9ca2d07359c6
 begin
-	recomendacion = DataFrame()
-	recomendacion.userID = 1:7
-	recomendacion.movie_1 = R[:,1]
-	recomendacion.movie_2 = R[:,2]
-	recomendacion.movie_3 = R[:,3]
-	recomendacion.movie_4 = R[:,4]
-	recomendacion.movie_5 = R[:,5]
-	recomendacion.movie_6 = R[:,6]
+	prediccion_df = DataFrame(prediccion_redondeo,names(netflix))
+	userID = 4
+	prediccion_usuario = DataFrame(prediccion_df[userID,:])
 end
-	
-	
 
-# ╔═╡ 97ab0ce5-e892-410a-b523-08523a018da9
-recomendacion
-
-# ╔═╡ c225e1ab-e8d8-4d08-8bac-47ae5fe2cd0f
-recomendacion[1,:]
+# ╔═╡ 8f502f05-1ef8-474f-b90d-8c1417eac2a4
+begin
+	df=DataFrame(netflix[userID,:])
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -76,7 +77,7 @@ Plots = "~1.40.9"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.11.3"
+julia_version = "1.11.4"
 manifest_format = "2.0"
 project_hash = "8966d4375464c8a3eda42f1d6f630791f4d65824"
 
@@ -631,7 +632,7 @@ version = "0.3.27+1"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+2"
+version = "0.8.1+4"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -1293,14 +1294,15 @@ version = "1.4.1+2"
 
 # ╔═╡ Cell order:
 # ╠═aeb708e0-fb6e-11ef-3d05-0ba03444f8d7
+# ╟─6e5b1efa-58e0-4a01-ae8a-9c5de5650b19
 # ╠═cc3d8c4f-5f7a-4275-a341-7b97f11aae7c
 # ╠═39e49da2-4730-498a-a3bc-f4e32d84d0a5
+# ╠═89559ff4-44b9-4cc4-a060-e4f65456346e
 # ╠═4f085d8a-a9dc-4e71-8095-7049e5a28213
 # ╠═0fa21fd1-40be-4595-8423-baf774d2b744
 # ╠═c8e878d3-dada-42e1-ad1d-ea8a6b7ca61a
 # ╠═2d5dadeb-2339-4997-a3e1-9581997c297a
-# ╠═48752a28-a395-4ad2-bb47-48e4b099ac8c
-# ╠═97ab0ce5-e892-410a-b523-08523a018da9
-# ╠═c225e1ab-e8d8-4d08-8bac-47ae5fe2cd0f
+# ╠═40c37d71-b482-42ba-806a-9ca2d07359c6
+# ╠═8f502f05-1ef8-474f-b90d-8c1417eac2a4
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
